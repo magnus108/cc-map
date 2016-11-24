@@ -3,7 +3,8 @@ module Map exposing (..)
 import Html exposing (program)
 import Html.Attributes
 
-import Time exposing (Time, millisecond)
+import AnimationFrame
+import Time exposing (Time)
 import Task
 
 import Css exposing (..)
@@ -24,10 +25,11 @@ main =
       , subscriptions = subscriptions
       }
 
+
 type alias Model =
-    { t : Time
-    , t1 : Time
-    , t2 : Time
+    { t : Float
+    , t1 : Float
+    , t2 : Float
     , x1 : Float
     , x2 : Float
     , y1 : Float
@@ -112,10 +114,10 @@ initialModel : Model
 initialModel =
     { t = 0
     , t1 = 0
-    , t2 = 2
-    , x1 = 200
+    , t2 = 1500
+    , x1 = 100
     , x2 = 0
-    , y1 = -200
+    , y1 = -100
     , y2 = 0
     , z1 = 4
     , z2 = 1
@@ -124,7 +126,7 @@ initialModel =
 
 init : (Model, Cmd Msg)
 init =
-    (initialModel, Task.perform SetTime Time.now)
+    initialModel ! []
 
 
 primary : String
@@ -416,21 +418,14 @@ svgify tree =
 
 type Msg
     = NoOp
-    | SetTime Time
     | Click (Tree Node)
-    | Tick Time
+    | Animate Time
 
 
 update msg model =
     case msg of
         NoOp ->
             model ! []
-
-        SetTime t ->
-            { model
-            | t = t
-            , t1 = t
-            } ! []
 
         Click tree ->
             let
@@ -465,11 +460,12 @@ update msg model =
             in
                 model_ ! []
 
-        Tick t ->
+        Animate _ ->
             let
                 updatePosition model =
                     let
-                        {t1
+                        {t
+                        ,t1
                         ,t2
                         ,x1
                         ,x2
@@ -479,13 +475,13 @@ update msg model =
                         ,z2
                         } = model
 
-                        dt = t - t1
+                        dt = t-t1
 
-                        dx = x2 - x1
+                        dx = x2-x1
 
-                        dy = y2 - y1
+                        dy = y2-y1
 
-                        dz = z2 - z1
+                        dz = z2-z1
 
                         cx = linearTween dt x1 dx t2
                         cy = linearTween dt y1 dy t2
@@ -498,7 +494,7 @@ update msg model =
                         }
 
                 updateTime model =
-                    { model | t = t }
+                    { model | t = model.t + 1 }
 
                 model_ =
                     model
@@ -511,10 +507,8 @@ update msg model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Time.every millisecond Tick
-
+    AnimationFrame.diffs Animate
 
 linearTween : Float -> Float -> Float -> Float -> Float
 linearTween t b c d =
-    c * t/d + b
-    --SMÅ BUGS SO FAR ER AT LINEAR TWEEN LEADS TO NAN....
+    c*t/d+b
