@@ -54,13 +54,14 @@ type alias Model =
 --- TROR DET SKAL VÆRE EN GRAPH..........
 --- TROR DET SKAL VÆRE EN GRAPH..........
 --- TROR DET SKAL VÆRE EN GRAPH..........
-
+--nej det skal være zippertree
 
 type alias Node =
     { x : Float
     , y : Float
     , z : Float
     , name : String
+    , textShadow : Color
     }
 
 type Tree node
@@ -72,7 +73,7 @@ type Tree node
 verden : Tree Node
 verden =
     Branch
-        ( { x = 0, y = 0, z = 0, name = "Verden"}
+        ( { x = 0, y = 0, z = 0, name = "Verden", textShadow = shadow1}
         , [nordamerika, sydamerika, europa, asien]
         )
 
@@ -80,46 +81,51 @@ verden =
 nordamerika : Tree Node
 nordamerika =
     Branch
-        ( { x = 25, y = 35, z = 2, name = "Nordamerika"}
+        ( { x = 25, y = 35, z = 2, name = "Nordamerika", textShadow = shadow1}
         , [canada, usa]
         )
 
 usa : Tree Node
 usa =
     Branch
-        ({ x = 21, y = 40, z = 3, name = "usa"}, [])
+        ({ x = 21, y = 40, z = 5, name = "USA", textShadow = shadow1}, [])
 
 canada : Tree Node
 canada =
     Branch
-        ({ x = 25, y = 30, z = 3, name = "canda"}, [])
+        ({ x = 25, y = 30, z = 3, name = "Canda", textShadow = shadow1}, [])
 
 sydamerika : Tree Node
 sydamerika =
     Branch
-        ({ x = 32, y = 65, z = 2, name = "Sydamerika"}, [])
+        ({ x = 32, y = 65, z = 2, name = "Sydamerika", textShadow = shadow1}, [])
 
 europa : Tree Node
 europa =
     Branch
-        ({ x = 51, y = 25, z = 2, name = "Europa"}, [])
+        ({ x = 51, y = 25, z = 5.0, name = "Europa", textShadow = shadow1}, [italien])
+
+italien : Tree Node
+italien =
+    Branch
+        ({ x = 51, y = 30, z = 3, name = "Italien", textShadow = shadow1}, [])
 
 asien : Tree Node
 asien =
     Branch
-        ({ x = 70, y = 35, z = 2, name = "Asien"}, [])
+        ({ x = 70, y = 35, z = 2, name = "Asien", textShadow = shadow1}, [])
 
 
 initialModel : Model
 initialModel =
     { t = 0
     , t1 = 0
-    , t2 = 1500
-    , x1 = 100
+    , t2 = 250
+    , x1 = 150
     , x2 = 0
-    , y1 = -100
+    , y1 = -150
     , y2 = 0
-    , z1 = 4
+    , z1 = 3
     , z2 = 1
     , tree = verden
     }
@@ -135,8 +141,14 @@ primary = "#1282a8"
 secondary : Color
 secondary = rgba 32 168 178 1
 
+shadow1 : Color
+shadow1 = rgba 74 7 7 1
+
+shadow2 : Color
+shadow2 = rgba 243 156 18 1
+
 accent : String
-accent = "#ff00eb"
+accent = "#c6dae0"
 
 view : Model -> Html.Html Msg
 view model =
@@ -146,14 +158,22 @@ view model =
     in
         Html.div
             [ styles
-                [ backgroundColor secondary
-                , width (pct 100)
+                [ width (pct 100)
+                --,backgroundColor secondary
                 , overflow hidden
                 ]
+            -- bad
+            , Html.Attributes.style [("background", "linear-gradient(to bottom,#20a8b2,#00a6de)")]
             ]
-            [ Svg.svg
+            -- bad
+            [ Html.node "link" [Html.Attributes.href "https://fonts.googleapis.com/css?family=Calligraffitti", Html.Attributes.rel "stylesheet"] []
+            , Svg.svg
                 [ Svg.Attributes.version "1.1"
                 , Svg.Attributes.viewBox "0 0 2000 1001"
+                --bad
+                , Html.Attributes.style
+                    [ ("webkit-filter", "drop-shadow( 0px 4px 0px #2e6c7d)")
+                    , ("filter", "drop-shadow( 0px 4px 0px #2e6c7d)")]
                 , styles
                     [ position relative
                     , transforms
@@ -377,14 +397,21 @@ view model =
                     , Svg.path [Svg.Attributes.id "CW", Svg.Attributes.name "Curaco", Svg.Attributes.d "m 595.9,494.9 0,-0.6 -0.9,-0.4 0,0.3 0.1,0.2 0.3,0.1 0.1,0.2 -0.1,0.6 0.2,0.3 0.3,-0.7 z"] []
                     , Svg.path [Svg.Attributes.id "IC", Svg.Attributes.name "Canary Islands", Svg.Attributes.d "m 879.6,395.2 -0.2,-0.2 -0.7,0.5 -0.6,0 0.1,0.2 0.1,0.2 0.7,0.4 0.6,-1.1 z m 13.5,-2.1 0,-0.1 -0.1,0 -0.1,0.1 -1.3,-0.1 -0.2,0.6 -0.5,0.4 0,0.7 0.5,0.7 0.3,0.1 0.5,0.1 0.7,-0.4 0.2,-0.4 0.1,-0.8 -0.1,-0.4 0,-0.5 z m -9.7,0.8 0.5,-0.4 0,-0.2 -0.1,-0.3 -0.5,-0.3 -0.2,0 -0.2,0.2 -0.2,0.4 0.3,0.5 0.2,0.1 0.2,0 z m 4.7,-2.3 1.2,-1 0,-0.3 -1,0.1 -1.1,1 -0.3,0.1 -1,0.1 -0.5,0 -0.4,0.2 0.2,0.3 0.4,1 0.7,0.9 0.6,-0.2 0.3,-0.2 0.4,-0.6 0.5,-1.4 z m 11.6,1.3 1.5,-0.5 0.3,-1 0.3,-1.1 0,-0.7 -0.2,-0.3 -0.1,0 -0.4,0 -0.3,0.2 -0.1,0.6 -0.7,1.3 -0.5,1.2 -0.7,0.6 -0.7,0.2 0.1,0.1 0.7,0.1 0.8,-0.7 z m -19.7,-2 0.5,-0.5 0.1,-0.3 -0.1,-0.5 0.2,-0.2 -0.1,-0.4 -0.3,-0.4 -0.7,0 -0.4,0.6 0.6,1.2 0.1,0.5 0.1,0 z m 22.4,-2.7 0.9,-0.3 0.5,-0.3 0.1,-0.9 0.2,-0.3 -0.2,-0.3 -0.2,0.2 -0.2,0.4 -0.6,0.2 -0.8,0.4 -0.2,0.3 -0.2,0.9 0.4,0.1 0.3,-0.4 z"] []
                     ]
-                    , Svg.g [] (List.map svgify children)
+                    , Svg.g
+                        [ styles
+                            [ fontSize (px 72)
+                            , fontFamilies ["Calligraffitti", "cursive"]
+                            , fontWeight bold
+                            , textShadow4 (px 4) (px 4) (px 4) shadow1
+                            ]
+                        ] (List.map svgify children)
                 ]
             ]
 
 --svgify : Node -> Svg Msg
 svgify tree =
     let
-        (Branch ({x, y, name}, b)) = tree
+        (Branch ({x, y, name, textShadow}, b)) = tree
     in
         case b of
             [] ->
@@ -393,25 +420,21 @@ svgify tree =
                     , Svg.Attributes.y (toString y ++ "%")
                     , Svg.Attributes.fill accent
                     , Svg.Attributes.textAnchor "middle"
-                    , styles
-                        [ fontSize (px 72)
-                        , fontFamilies ["Times New Roman", "Georgia, Serif"]
-                        ]
                     ] [Svg.text name]
             _ ->
                 Svg.a
                     [ Svg.Attributes.xlinkHref ("#" ++ name)
                     , Svg.Events.onClick (Click tree)
+                    , Svg.Events.onMouseOver (Hover tree)
+                    , styles
+                        [ textShadow4 (px 4) (px 4) (px 4) textShadow
+                        ]
                     ]
                     [ Svg.text_
                         [ Svg.Attributes.x (toString x ++ "%")
                         , Svg.Attributes.y (toString y ++ "%")
                         , Svg.Attributes.fill accent
                         , Svg.Attributes.textAnchor "middle"
-                        , styles
-                            [ fontSize (px 72)
-                            , fontFamilies ["Times New Roman", "Georgia, Serif"]
-                            ]
                         ] [Svg.text name]
                     ]
 
@@ -420,11 +443,15 @@ type Msg
     = NoOp
     | Click (Tree Node)
     | Animate Time
+    | Hover (Tree Node)
 
 
 update msg model =
     case msg of
         NoOp ->
+            model ! []
+
+        Hover tree ->
             model ! []
 
         Click tree ->
@@ -436,8 +463,8 @@ update msg model =
 
                 -- måske -1 skal være - model.z2????
 
-                x2 = 2*(50-x*(z-1))
-                y2 = 2*(50-y*(z-1))
+                x2 = z*(50-x)
+                y2 = z*(50-y)
 
                 updateDomain model =
                     { model
