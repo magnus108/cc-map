@@ -1,4 +1,5 @@
 module Map exposing (..)
+--gotoChild må være den function jeg skal lave om
 
 import Html exposing (program)
 import Html.Attributes
@@ -36,25 +37,9 @@ type alias Model =
     , y2 : Float
     , z1 : Float
     , z2 : Float
-    , tree : Tree Node
+    , zipper : Maybe (Zipper Node)
     }
 
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---- TROR DET SKAL VÆRE EN GRAPH..........
---nej det skal være zippertree
 
 type alias Node =
     { x : Float
@@ -64,56 +49,124 @@ type alias Node =
     , textShadow : Color
     }
 
-type Tree node
-    = Branch (node, List (Tree node))
-    -- = Root (List Tree node)
-    -- = Branch (node, List (Tree node))
-    -- = Branch (Maybe (node, List (Tree node)))
+
+type Tree a
+    = Tree a (Forest a)
+
+
+type alias Forest a =
+    List (Tree a)
+
+
+type Context a
+    = Context a (List (Tree a)) (List (Tree a))
+
+
+type alias Breadcrumbs a =
+    List (Context a)
+
+
+type alias Zipper a =
+    (Tree a, Breadcrumbs a)
+
+(&>) = flip Maybe.andThen
+
+goUp : Zipper a -> Maybe (Zipper a)
+goUp ( tree, breadcrumbs ) =
+    case breadcrumbs of
+        (Context datum before after) :: bs ->
+            Just ( Tree datum (before ++ [ tree ] ++ after), bs )
+
+        [] ->
+            Nothing
+
+
+goToChild : Tree a -> Zipper a -> Maybe (Zipper a)
+goToChild tree ( Tree datum children, breadcrumbs ) =
+    let
+
+        maybeSplit =
+            elemIndex tree children
+                &> (flip splitOnIndex children)
+
+    in
+        case (maybeSplit) of
+            Nothing ->
+                Nothing
+
+            Just ( before, focus, after ) ->
+                Just ( focus, (Context datum before after) :: breadcrumbs )
+
+
+findIndex : (a -> Bool) -> List a -> Maybe Int
+findIndex p = List.head << findIndices p
+
+findIndices : (a -> Bool) -> List a -> List Int
+findIndices p = List.map Tuple.first << List.filter (\(i,x) -> p x) << List.indexedMap (,)
+
+elemIndex : a -> List a -> Maybe Int
+elemIndex x = findIndex ((==)x)
+
+splitOnIndex : Int -> List (Tree a) -> Maybe ( List (Tree a), Tree a, List (Tree a) )
+splitOnIndex n xs =
+    let
+        before =
+            List.take n xs
+
+        focus =
+            List.drop n xs |> List.head
+
+        after =
+            List.drop (n + 1) xs
+    in
+        case focus of
+            Nothing ->
+                Nothing
+
+            Just f ->
+                Just ( before, f, after )
+
 
 verden : Tree Node
 verden =
-    Branch
-        ( { x = 0, y = 0, z = 0, name = "Verden", textShadow = shadow1}
-        , [nordamerika, sydamerika, europa, asien]
-        )
+    Tree { x = 0, y = 0, z = 0, name = "Verden", textShadow = shadow1}
+        [nordamerika, sydamerika, europa, asien]
 
 
 nordamerika : Tree Node
 nordamerika =
-    Branch
-        ( { x = 25, y = 35, z = 2, name = "Nordamerika", textShadow = shadow1}
-        , [canada, usa]
-        )
+    Tree { x = 25, y = 35, z = 2, name = "Nordamerika", textShadow = shadow1}
+        [canada, usa]
 
 usa : Tree Node
 usa =
-    Branch
-        ({ x = 21, y = 40, z = 5, name = "USA", textShadow = shadow1}, [])
+    Tree { x = 21, y = 40, z = 5, name = "USA", textShadow = shadow1}
+        []
 
 canada : Tree Node
 canada =
-    Branch
-        ({ x = 25, y = 30, z = 3, name = "Canda", textShadow = shadow1}, [])
+    Tree { x = 25, y = 30, z = 3, name = "Canda", textShadow = shadow1}
+        []
 
 sydamerika : Tree Node
 sydamerika =
-    Branch
-        ({ x = 32, y = 65, z = 2, name = "Sydamerika", textShadow = shadow1}, [])
+    Tree { x = 32, y = 65, z = 2, name = "Sydamerika", textShadow = shadow1}
+        []
 
 europa : Tree Node
 europa =
-    Branch
-        ({ x = 51, y = 25, z = 5.0, name = "Europa", textShadow = shadow1}, [italien])
+    Tree { x = 51, y = 25, z = 5.0, name = "Europa", textShadow = shadow1}
+        [italien]
 
 italien : Tree Node
 italien =
-    Branch
-        ({ x = 51, y = 30, z = 3, name = "Italien", textShadow = shadow1}, [])
+    Tree { x = 51, y = 30, z = 3, name = "Italien", textShadow = shadow1}
+        []
 
 asien : Tree Node
 asien =
-    Branch
-        ({ x = 70, y = 35, z = 2, name = "Asien", textShadow = shadow1}, [])
+    Tree { x = 70, y = 35, z = 2, name = "Asien", textShadow = shadow1}
+        []
 
 
 initialModel : Model
@@ -127,7 +180,7 @@ initialModel =
     , y2 = 0
     , z1 = 3
     , z2 = 1
-    , tree = verden
+    , zipper = Just (verden, [])
     }
 
 init : (Model, Cmd Msg)
@@ -150,11 +203,33 @@ shadow2 = rgba 243 156 18 1
 accent : String
 accent = "#c6dae0"
 
+
+
+datum : Zipper a -> a
+datum ( tree, breadcrumbs ) =
+    datum1 tree
+
+------------------------------
+datum1 : Tree a -> a
+datum1 (Tree datum children) =
+    datum
+
+children1 : Tree a -> Forest a
+children1 (Tree datum children) =
+    children
+-----------------------------
+
 view : Model -> Html.Html Msg
 view model =
     let
-        {x1, y1, z1, tree} = model
-        (Branch ({x, y, z}, children)) = tree
+
+        {x1, y1, z1, zipper} = model
+
+        children =
+            case zipper of
+                Nothing -> []
+                Just (a, b) ->
+                    children1 a
     in
         Html.div
             [ styles
@@ -405,13 +480,31 @@ view model =
                             , textShadow4 (px 4) (px 4) (px 4) shadow1
                             ]
                         ] (List.map svgify children)
+                    , Svg.g
+                        [ styles
+                            [ fontSize (px 48)
+                            , fontFamilies ["Calligraffitti", "cursive"]
+                            , fontWeight bold
+                            , textShadow4 (px 4) (px 4) (px 4) shadow1
+                            ]
+                        ]
+                        [ Svg.text_
+                            [ Svg.Attributes.x ("95%")
+                            , Svg.Attributes.y ("5%")
+                            , Svg.Attributes.fill accent
+                            , Svg.Attributes.textAnchor "end"
+                            , Svg.Attributes.dominantBaseline "hanging"
+                            ] [Svg.text "Tilbage"]
+                        ]
                 ]
             ]
+
+
 
 --svgify : Node -> Svg Msg
 svgify tree =
     let
-        (Branch ({x, y, name, textShadow}, b)) = tree
+        (Tree {x, y, name, textShadow} b) = tree
     in
         case b of
             [] ->
@@ -425,7 +518,7 @@ svgify tree =
                 Svg.a
                     [ Svg.Attributes.xlinkHref ("#" ++ name)
                     , Svg.Events.onClick (Click tree)
-                    , Svg.Events.onMouseOver (Hover tree)
+                    --, Svg.Events.onMouseOver (Hover tree)
                     , styles
                         [ textShadow4 (px 4) (px 4) (px 4) textShadow
                         ]
@@ -443,23 +536,25 @@ type Msg
     = NoOp
     | Click (Tree Node)
     | Animate Time
-    | Hover (Tree Node)
-
+   -- | Hover (Tree Node)
 
 update msg model =
     case msg of
         NoOp ->
             model ! []
 
-        Hover tree ->
-            model ! []
+    --    Hover tree ->
+      --      model ! []
 
         Click tree ->
             let
 
                 {t} = model
 
-                (Branch ({x, y, z}, b)) = tree
+
+
+                --(Tree {x, y, z} b) = tree
+                (Tree {x, y, z} b) = tree
 
                 -- måske -1 skal være - model.z2????
 
@@ -467,9 +562,13 @@ update msg model =
                 y2 = z*(50-y)
 
                 updateDomain model =
-                    { model
-                    | tree = tree
-                    }
+                    let
+                        {zipper} = model
+                    in
+                        { model
+                        | zipper = zipper &> goToChild tree
+                        }
+
 
                 updatePosition model =
                     { model
