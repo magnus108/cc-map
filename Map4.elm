@@ -1,5 +1,5 @@
 module Map exposing (..)
---gotoChild må være den function jeg skal lave om
+--gotoChild kan gå til vilkårlig child
 
 import Html exposing (program)
 import Html.Attributes
@@ -129,7 +129,8 @@ splitOnIndex n xs =
 
 verden : Tree Node
 verden =
-    Tree { x = 0, y = 0, z = 0, name = "Verden", textShadow = shadow1}
+    -- maybe a little stupid that i have this as tilbage as it is a litte  bad to have 50 50 0
+    Tree { x = 50, y = 50, z = 1, name = "Verden", textShadow = shadow1}
         [nordamerika, sydamerika, europa, asien]
 
 
@@ -151,6 +152,11 @@ canada =
 sydamerika : Tree Node
 sydamerika =
     Tree { x = 32, y = 65, z = 2, name = "Sydamerika", textShadow = shadow1}
+        [brasilien]
+
+brasilien : Tree Node
+brasilien =
+    Tree { x = 32, y = 66, z = 3.5, name = "Brasilien", textShadow = shadow1}
         []
 
 europa : Tree Node
@@ -166,8 +172,12 @@ italien =
 asien : Tree Node
 asien =
     Tree { x = 70, y = 35, z = 2, name = "Asien", textShadow = shadow1}
-        []
+        [thailand]
 
+thailand : Tree Node
+thailand =
+    Tree { x = 75, y = 58, z = 2, name = "thailand", textShadow = shadow1}
+        []
 
 initialModel : Model
 initialModel =
@@ -488,13 +498,19 @@ view model =
                             , textShadow4 (px 4) (px 4) (px 4) shadow1
                             ]
                         ]
-                        [ Svg.text_
-                            [ Svg.Attributes.x ("95%")
-                            , Svg.Attributes.y ("5%")
-                            , Svg.Attributes.fill accent
+                        [ Svg.a
+                            [ Svg.Attributes.xlinkHref ("#" ++ "Tilbage")
+                            , Svg.Events.onClick Back
                             , Svg.Attributes.textAnchor "end"
                             , Svg.Attributes.dominantBaseline "hanging"
-                            ] [Svg.text "Tilbage"]
+                            ]
+                            [ Svg.text_
+                                [ Svg.Attributes.x (toString ((-1*((x1/z1)-50))+((50*0.95)/z1)) ++ "%")
+                                , Svg.Attributes.y (toString ((-1*((y1/z1)-50))-((50*0.95)/z1)) ++ "%")
+                                , Svg.Attributes.fill accent
+                                ]
+                                [Svg.text "Tilbage"]
+                            ]
                         ]
                 ]
             ]
@@ -536,12 +552,54 @@ type Msg
     = NoOp
     | Click (Tree Node)
     | Animate Time
+    | Back
    -- | Hover (Tree Node)
 
 update msg model =
     case msg of
         NoOp ->
             model ! []
+
+        Back ->
+            let
+
+                updateDomain model =
+                    let
+                        {zipper} = model
+                    in
+                        { model
+                        | zipper = zipper &> goUp
+                        }
+
+                updatePosition model =
+                    let
+                        {t, zipper} = model
+
+                        tree =
+                            case zipper of
+                                Nothing -> verden
+                                Just (a, b) ->
+                                    a
+
+                        (Tree {x, y, z} b) = tree
+
+                        x2 = z*(50-x)
+                        y2 = z*(50-y)
+                    in
+                        { model
+                        | x2 = x2
+                        , y2 = y2
+                        , z2 = z
+                        , t1 = t
+                        }
+
+                model_ =
+                    model
+                        |> updateDomain
+                        |> updatePosition
+
+            in
+                model_ ! []
 
     --    Hover tree ->
       --      model ! []
