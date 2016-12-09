@@ -47,6 +47,7 @@ type alias Node =
     , z : Float
     , name : String
     , textShadow : Color
+    , textColor : Color
     }
 
 
@@ -97,6 +98,13 @@ goToChild tree ( Tree datum children, breadcrumbs ) =
             Just ( before, focus, after ) ->
                 Just ( focus, (Context datum before after) :: breadcrumbs )
 
+updateDatum : (a -> a) -> Zipper a -> Maybe (Zipper a)
+updateDatum fn ( Tree datum children, breadcrumbs ) =
+    Just ( Tree (fn datum) children, breadcrumbs )
+
+replaceDatum : a -> Zipper a -> Maybe (Zipper a)
+replaceDatum newDatum =
+    updateDatum (\_ -> newDatum)
 
 findIndex : (a -> Bool) -> List a -> Maybe Int
 findIndex p = List.head << findIndices p
@@ -130,175 +138,175 @@ splitOnIndex n xs =
 verden : Tree Node
 verden =
     -- maybe a little stupid that i have this as tilbage as it is a litte  bad to have 50 50 0
-    Tree { x = 50, y = 50, z = 1, name = "Verden", textShadow = shadow1}
+    Tree { x = 50, y = 50, z = 1, name = "Verden", textShadow = shadow1, textColor = accent}
         [afrika, nordamerika, sydamerika, europa, asien]
 
 
 afrika : Tree Node
 afrika =
-    Tree { x = 53, y = 53, z = 2, name = "Afrika", textShadow = shadow1}
+    Tree { x = 53, y = 53, z = 2, name = "Afrika", textShadow = shadow1, textColor = accent}
         [seychellerne]
 
 seychellerne : Tree Node
 seychellerne =
-    Tree { x = 63, y = 58, z = 2, name = "Seychellerne", textShadow = shadow1}
+    Tree { x = 63, y = 58, z = 2, name = "Seychellerne", textShadow = shadow1, textColor = accent}
         []
 
 nordamerika : Tree Node
 nordamerika =
-    Tree { x = 25, y = 35, z = 2, name = "Nordamerika", textShadow = shadow1}
+    Tree { x = 25, y = 35, z = 2, name = "Nordamerika", textShadow = shadow1, textColor = accent}
         [canada, usa, cuba, danskVestindien, mexico]
 
 usa : Tree Node
 usa =
-    Tree { x = 21, y = 35, z = 5, name = "USA", textShadow = shadow1}
-        []
+    Tree { x = 21, y = 35, z = 5, name = "USA", textShadow = shadow1, textColor = accent}
+        [canada]
 
 canada : Tree Node
 canada =
-    Tree { x = 25, y = 27, z = 3, name = "Canda", textShadow = shadow1}
+    Tree { x = 25, y = 27, z = 3, name = "Canda", textShadow = shadow1, textColor = accent}
         []
 
 cuba : Tree Node
 cuba =
-    Tree { x = 27, y = 45, z = 3, name = "Cuba", textShadow = shadow1}
+    Tree { x = 27, y = 45, z = 3, name = "Cuba", textShadow = shadow1, textColor = accent}
         []
 
 danskVestindien : Tree Node
 danskVestindien =
-    Tree { x = 30, y = 50, z = 3, name = "Dansk Vestindien", textShadow = shadow1}
+    Tree { x = 30, y = 50, z = 3, name = "Dansk Vestindien", textShadow = shadow1, textColor = accent}
         []
 
 mexico : Tree Node
 mexico =
-    Tree { x = 20, y = 43, z = 3, name = "Mexico", textShadow = shadow1}
+    Tree { x = 20, y = 43, z = 3, name = "Mexico", textShadow = shadow1, textColor = accent}
         []
 
 
 sydamerika : Tree Node
 sydamerika =
-    Tree { x = 32, y = 65, z = 2, name = "Sydamerika", textShadow = shadow1}
+    Tree { x = 32, y = 65, z = 2, name = "Sydamerika", textShadow = shadow1, textColor = accent}
         [argentina, brasilien, chile, colombia, costaRica, ecuador, panama, peru]
 
 
 argentina : Tree Node
 argentina =
-    Tree { x = 32, y = 81, z = 3.5, name = "Argentina", textShadow = shadow1}
+    Tree { x = 32, y = 81, z = 3.5, name = "Argentina", textShadow = shadow1, textColor = accent}
         []
 
 brasilien : Tree Node
 brasilien =
-    Tree { x = 36, y = 59, z = 3.5, name = "Brasilien", textShadow = shadow1}
+    Tree { x = 36, y = 59, z = 3.5, name = "Brasilien", textShadow = shadow1, textColor = accent}
         []
 
 chile : Tree Node
 chile =
-    Tree { x = 30, y = 75, z = 3.5, name = "Chile", textShadow = shadow1}
+    Tree { x = 30, y = 75, z = 3.5, name = "Chile", textShadow = shadow1, textColor = accent}
         []
 
 colombia : Tree Node
 colombia =
-    Tree { x = 28, y = 58, z = 3.5, name = "Colombia", textShadow = shadow1}
+    Tree { x = 28, y = 58, z = 3.5, name = "Colombia", textShadow = shadow1, textColor = accent}
         []
 
 costaRica : Tree Node
 costaRica =
-    Tree { x = 26, y = 50, z = 3.5, name = "Costa Rica", textShadow = shadow1}
+    Tree { x = 26, y = 50, z = 3.5, name = "Costa Rica", textShadow = shadow1, textColor = accent}
         []
 
 ecuador : Tree Node
 ecuador =
-    Tree { x = 30, y = 62, z = 3.5, name = "Ecuador (Galapagos)", textShadow = shadow1}
+    Tree { x = 30, y = 62, z = 3.5, name = "Ecuador (Galapagos)", textShadow = shadow1, textColor = accent}
         []
 
 panama : Tree Node
 panama =
-    Tree { x = 27, y = 54, z = 3, name = "Panama", textShadow = shadow1}
+    Tree { x = 27, y = 54, z = 3, name = "Panama", textShadow = shadow1, textColor = accent}
         []
 
 peru : Tree Node
 peru =
-    Tree { x = 28, y = 69, z = 3, name = "Peru", textShadow = shadow1}
+    Tree { x = 28, y = 69, z = 3, name = "Peru", textShadow = shadow1, textColor = accent}
         []
 
 europa : Tree Node
 europa =
-    Tree { x = 51, y = 25, z = 5.0, name = "Europa", textShadow = shadow1}
+    Tree { x = 51, y = 25, z = 5.0, name = "Europa", textShadow = shadow1, textColor = accent}
         [italien]
 
 italien : Tree Node
 italien =
-    Tree { x = 53, y = 33, z = 3, name = "Italien", textShadow = shadow1}
+    Tree { x = 53, y = 33, z = 3, name = "Italien", textShadow = shadow1, textColor = accent}
         []
 
 asien : Tree Node
 asien =
-    Tree { x = 75, y = 45, z = 2.5, name = "Asien", textShadow = shadow1}
+    Tree { x = 75, y = 45, z = 2.5, name = "Asien", textShadow = shadow1, textColor = accent}
         [burma, cambodia, dubai, filippinerne, indien, indonesien, japan, laos, malaysia, maldiverne, sriLanka, thailand, vietnam]
 
 burma : Tree Node
 burma =
-    Tree { x = 75, y = 47, z = 2, name = "Burma", textShadow = shadow1}
+    Tree { x = 75, y = 47, z = 2, name = "Burma", textShadow = shadow1, textColor = accent}
         []
 
 cambodia : Tree Node
 cambodia =
-    Tree { x = 78, y = 50, z = 2, name = "Cambodia", textShadow = shadow1}
+    Tree { x = 78, y = 50, z = 2, name = "Cambodia", textShadow = shadow1, textColor = accent}
         []
 
 dubai : Tree Node
 dubai =
-    Tree { x = 64, y = 43, z = 2, name = "Dubai", textShadow = shadow1}
+    Tree { x = 64, y = 43, z = 2, name = "Dubai", textShadow = shadow1, textColor = accent}
         []
 
 filippinerne : Tree Node
 filippinerne =
-    Tree { x = 87, y = 54, z = 2, name = "Filippinerne", textShadow = shadow1}
+    Tree { x = 87, y = 54, z = 2, name = "Filippinerne", textShadow = shadow1, textColor = accent}
         []
 
 indien : Tree Node
 indien =
-    Tree { x = 70, y = 50, z = 2, name = "Indien", textShadow = shadow1}
+    Tree { x = 70, y = 50, z = 2, name = "Indien", textShadow = shadow1, textColor = accent}
         []
 
 indonesien : Tree Node
 indonesien =
-    Tree { x = 87, y = 62, z = 2, name = "Indonesien (Bali)", textShadow = shadow1}
+    Tree { x = 87, y = 62, z = 2, name = "Indonesien (Bali)", textShadow = shadow1, textColor = accent}
         []
 
 japan : Tree Node
 japan =
-    Tree { x = 86, y = 35, z = 2, name = "Japan", textShadow = shadow1}
+    Tree { x = 86, y = 35, z = 2, name = "Japan", textShadow = shadow1, textColor = accent}
         []
 
 laos : Tree Node
 laos =
-    Tree { x = 76, y = 44, z = 2, name = "Laos", textShadow = shadow1}
+    Tree { x = 76, y = 44, z = 2, name = "Laos", textShadow = shadow1, textColor = accent}
         []
 
 malaysia : Tree Node
 malaysia =
-    Tree { x = 81, y = 58, z = 2, name = "Malaysia (Borneo)", textShadow = shadow1}
+    Tree { x = 81, y = 58, z = 2, name = "Malaysia (Borneo)", textShadow = shadow1, textColor = accent}
         []
 
 maldiverne : Tree Node
 maldiverne =
-    Tree { x = 69, y = 57, z = 2, name = "Maldiverne", textShadow = shadow1}
+    Tree { x = 69, y = 57, z = 2, name = "Maldiverne", textShadow = shadow1, textColor = accent}
         []
 
 sriLanka : Tree Node
 sriLanka =
-    Tree { x = 70, y = 53, z = 2, name = "Sri Lanka", textShadow = shadow1}
+    Tree { x = 70, y = 53, z = 2, name = "Sri Lanka", textShadow = shadow1, textColor = accent}
         []
 
 vietnam : Tree Node
 vietnam =
-    Tree { x = 81, y = 47, z = 2, name = "Vietnam", textShadow = shadow1}
+    Tree { x = 81, y = 47, z = 2, name = "Vietnam", textShadow = shadow1, textColor = accent}
         []
 
 thailand : Tree Node
 thailand =
-    Tree { x = 78, y = 54, z = 2, name = "Thailand", textShadow = shadow1}
+    Tree { x = 78, y = 54, z = 2, name = "Thailand", textShadow = shadow1, textColor = accent}
         []
 
 initialModel : Model
@@ -332,9 +340,11 @@ shadow1 = rgba 74 7 7 1
 shadow2 : Color
 shadow2 = rgba 243 156 18 1
 
-accent : String
-accent = "#c6dae0"
+accent : Color
+accent = rgba 255 255 255 1
 
+hover : Color
+hover = rgba 231 76 60 1
 
 
 datum : Zipper a -> a
@@ -662,24 +672,26 @@ view model =
 --svgify : Node -> Svg Msg
 svgify tree =
     let
-        (Tree {x, y, name, textShadow} b) = tree
+        (Tree {x, y, name, textShadow, textColor} b) = tree
     in
         case b of
             [] ->
                 Svg.text_
                     [ Svg.Attributes.x (toString x ++ "%")
                     , Svg.Attributes.y (toString y ++ "%")
-                    , Svg.Attributes.fill "white"
+                    , Svg.Attributes.fill "currentColor"
                     , Svg.Attributes.textAnchor "middle"
                     , styles
                         [ fontSize (px 42)
+                        , color textColor
                         ]
                     ] [Svg.text name]
             _ ->
                 Svg.a
                     [ Svg.Attributes.xlinkHref ("#" ++ name)
                     , Svg.Events.onClick (Click tree)
-                    --, Svg.Events.onMouseOver (Hover tree)
+                    , Svg.Events.onMouseOver (MouseOver tree)
+                    , Svg.Events.onMouseOut (MouseOut tree)
                     , styles
                         [ textShadow4 (px 4) (px 4) (px 4) textShadow
                         ]
@@ -687,8 +699,11 @@ svgify tree =
                     [ Svg.text_
                         [ Svg.Attributes.x (toString x ++ "%")
                         , Svg.Attributes.y (toString y ++ "%")
-                        , Svg.Attributes.fill "white"
                         , Svg.Attributes.textAnchor "middle"
+                        , Svg.Attributes.fill "currentColor"
+                        , styles
+                            [ color textColor
+                            ]
                         ] [Svg.text name]
                     ]
 
@@ -698,7 +713,8 @@ type Msg
     | Click (Tree Node)
     | Animate Time
     | Back
-   -- | Hover (Tree Node)
+    | MouseOver (Tree Node)
+    | MouseOut (Tree Node)
 
 update msg model =
     case msg of
@@ -746,8 +762,57 @@ update msg model =
             in
                 model_ ! []
 
-    --    Hover tree ->
-      --      model ! []
+        MouseOver tree ->
+            let
+
+                updateDomain model =
+                    let
+                        {zipper} = model
+                    in
+                        { model
+                        | zipper =
+                            case zipper of
+                                Nothing -> Nothing
+                                Just xx ->
+                                    Just
+                                        (Maybe.withDefault xx (zipper
+                                        &> goToChild tree
+                                        &> updateDatum (\old -> { old | textColor = hover})
+                                        &> goUp))
+                        }
+
+                model_ =
+                    model
+                        |> updateDomain
+
+            in
+                model_ ! []
+
+        MouseOut tree ->
+            let
+
+                updateDomain model =
+                    let
+                        {zipper} = model
+                    in
+                        { model
+                        | zipper =
+                            case zipper of
+                                Nothing -> Nothing
+                                Just xx ->
+                                    Just
+                                        (Maybe.withDefault xx (zipper
+                                        &> goToChild tree
+                                        &> updateDatum (\old -> { old | textColor = accent})
+                                        &> goUp))
+                        }
+
+                model_ =
+                    model
+                        |> updateDomain
+
+            in
+                model_ ! []
 
         Click tree ->
             let
