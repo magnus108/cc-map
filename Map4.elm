@@ -188,7 +188,7 @@ argentina =
 
 brasilien : Tree Node
 brasilien =
-    Tree { x = 35, y = 63, z = 3.5, name = "Brasilien", textShadow = shadow1}
+    Tree { x = 36, y = 59, z = 3.5, name = "Brasilien", textShadow = shadow1}
         []
 
 chile : Tree Node
