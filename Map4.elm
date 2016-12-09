@@ -131,32 +131,94 @@ verden : Tree Node
 verden =
     -- maybe a little stupid that i have this as tilbage as it is a litte  bad to have 50 50 0
     Tree { x = 50, y = 50, z = 1, name = "Verden", textShadow = shadow1}
-        [nordamerika, sydamerika, europa, asien]
+        [afrika, nordamerika, sydamerika, europa, asien]
 
+
+afrika : Tree Node
+afrika =
+    Tree { x = 53, y = 53, z = 2, name = "Afrika", textShadow = shadow1}
+        [seychellerne]
+
+seychellerne : Tree Node
+seychellerne =
+    Tree { x = 63, y = 58, z = 2, name = "Seychellerne", textShadow = shadow1}
+        []
 
 nordamerika : Tree Node
 nordamerika =
     Tree { x = 25, y = 35, z = 2, name = "Nordamerika", textShadow = shadow1}
-        [canada, usa]
+        [canada, usa, cuba, danskVestindien, mexico]
 
 usa : Tree Node
 usa =
-    Tree { x = 21, y = 40, z = 5, name = "USA", textShadow = shadow1}
+    Tree { x = 21, y = 35, z = 5, name = "USA", textShadow = shadow1}
         []
 
 canada : Tree Node
 canada =
-    Tree { x = 25, y = 30, z = 3, name = "Canda", textShadow = shadow1}
+    Tree { x = 25, y = 27, z = 3, name = "Canda", textShadow = shadow1}
         []
+
+cuba : Tree Node
+cuba =
+    Tree { x = 27, y = 45, z = 3, name = "Cuba", textShadow = shadow1}
+        []
+
+danskVestindien : Tree Node
+danskVestindien =
+    Tree { x = 30, y = 50, z = 3, name = "Dansk Vestindien", textShadow = shadow1}
+        []
+
+mexico : Tree Node
+mexico =
+    Tree { x = 20, y = 43, z = 3, name = "Mexico", textShadow = shadow1}
+        []
+
 
 sydamerika : Tree Node
 sydamerika =
     Tree { x = 32, y = 65, z = 2, name = "Sydamerika", textShadow = shadow1}
-        [brasilien]
+        [argentina, brasilien, chile, colombia, costaRica, ecuador, panama, peru]
+
+
+argentina : Tree Node
+argentina =
+    Tree { x = 32, y = 81, z = 3.5, name = "Argentina", textShadow = shadow1}
+        []
 
 brasilien : Tree Node
 brasilien =
-    Tree { x = 32, y = 66, z = 3.5, name = "Brasilien", textShadow = shadow1}
+    Tree { x = 35, y = 63, z = 3.5, name = "Brasilien", textShadow = shadow1}
+        []
+
+chile : Tree Node
+chile =
+    Tree { x = 30, y = 75, z = 3.5, name = "Chile", textShadow = shadow1}
+        []
+
+colombia : Tree Node
+colombia =
+    Tree { x = 28, y = 58, z = 3.5, name = "Colombia", textShadow = shadow1}
+        []
+
+costaRica : Tree Node
+costaRica =
+    Tree { x = 26, y = 50, z = 3.5, name = "Costa Rica", textShadow = shadow1}
+        []
+
+ecuador : Tree Node
+ecuador =
+    Tree { x = 30, y = 62, z = 3.5, name = "Ecuador (Galapagos)", textShadow = shadow1}
+        []
+
+panama : Tree Node
+panama =
+    Tree { x = 27, y = 54, z = 3, name = "Panama", textShadow = shadow1}
+        []
+
+peru : Tree Node
+peru =
+    Tree { x = 28, y = 69, z = 3, name = "Peru", textShadow = shadow1}
         []
 
 europa : Tree Node
@@ -166,24 +228,84 @@ europa =
 
 italien : Tree Node
 italien =
-    Tree { x = 51, y = 30, z = 3, name = "Italien", textShadow = shadow1}
+    Tree { x = 53, y = 33, z = 3, name = "Italien", textShadow = shadow1}
         []
 
 asien : Tree Node
 asien =
-    Tree { x = 70, y = 35, z = 2, name = "Asien", textShadow = shadow1}
-        [thailand]
+    Tree { x = 75, y = 45, z = 2.5, name = "Asien", textShadow = shadow1}
+        [burma, cambodia, dubai, filippinerne, indien, indonesien, japan, laos, malaysia, maldiverne, sriLanka, thailand, vietnam]
+
+burma : Tree Node
+burma =
+    Tree { x = 75, y = 47, z = 2, name = "Burma", textShadow = shadow1}
+        []
+
+cambodia : Tree Node
+cambodia =
+    Tree { x = 78, y = 50, z = 2, name = "Cambodia", textShadow = shadow1}
+        []
+
+dubai : Tree Node
+dubai =
+    Tree { x = 64, y = 43, z = 2, name = "Dubai", textShadow = shadow1}
+        []
+
+filippinerne : Tree Node
+filippinerne =
+    Tree { x = 87, y = 54, z = 2, name = "Filippinerne", textShadow = shadow1}
+        []
+
+indien : Tree Node
+indien =
+    Tree { x = 70, y = 50, z = 2, name = "Indien", textShadow = shadow1}
+        []
+
+indonesien : Tree Node
+indonesien =
+    Tree { x = 87, y = 62, z = 2, name = "Indonesien (Bali)", textShadow = shadow1}
+        []
+
+japan : Tree Node
+japan =
+    Tree { x = 86, y = 35, z = 2, name = "Japan", textShadow = shadow1}
+        []
+
+laos : Tree Node
+laos =
+    Tree { x = 76, y = 44, z = 2, name = "Laos", textShadow = shadow1}
+        []
+
+malaysia : Tree Node
+malaysia =
+    Tree { x = 81, y = 58, z = 2, name = "Malaysia (Borneo)", textShadow = shadow1}
+        []
+
+maldiverne : Tree Node
+maldiverne =
+    Tree { x = 69, y = 57, z = 2, name = "Maldiverne", textShadow = shadow1}
+        []
+
+sriLanka : Tree Node
+sriLanka =
+    Tree { x = 70, y = 53, z = 2, name = "Sri Lanka", textShadow = shadow1}
+        []
+
+vietnam : Tree Node
+vietnam =
+    Tree { x = 81, y = 47, z = 2, name = "Vietnam", textShadow = shadow1}
+        []
 
 thailand : Tree Node
 thailand =
-    Tree { x = 75, y = 58, z = 2, name = "thailand", textShadow = shadow1}
+    Tree { x = 78, y = 54, z = 2, name = "Thailand", textShadow = shadow1}
         []
 
 initialModel : Model
 initialModel =
     { t = 0
     , t1 = 0
-    , t2 = 1000
+    , t2 = 150
     , x1 = 150
     , x2 = 0
     , y1 = -150
@@ -549,6 +671,9 @@ svgify tree =
                     , Svg.Attributes.y (toString y ++ "%")
                     , Svg.Attributes.fill "white"
                     , Svg.Attributes.textAnchor "middle"
+                    , styles
+                        [ fontSize (px 42)
+                        ]
                     ] [Svg.text name]
             _ ->
                 Svg.a
