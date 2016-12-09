@@ -183,7 +183,7 @@ initialModel : Model
 initialModel =
     { t = 0
     , t1 = 0
-    , t2 = 250
+    , t2 = 1000
     , x1 = 150
     , x2 = 0
     , y1 = -150
@@ -240,6 +240,14 @@ view model =
                 Nothing -> []
                 Just (a, b) ->
                     children1 a
+        --remove
+        hasDaddy =
+            case zipper of
+                Nothing -> False
+                Just (a, b) ->
+                    case b of
+                        [] -> False
+                        _ -> True
     in
         Html.div
             [ styles
@@ -257,8 +265,10 @@ view model =
                 , Svg.Attributes.viewBox "0 0 2000 1001"
                 --bad
                 , Html.Attributes.style
+                ---USE SVG GAUSSIAN FILTER PLEASE
                     [ ("webkit-filter", "drop-shadow( 0px 4px 0px #2e6c7d)")
-                    , ("filter", "drop-shadow( 0px 4px 0px #2e6c7d)")]
+                    , ("filter", "drop-shadow( 0px 4px 0px #2e6c7d)")
+                    ]
                 , styles
                     [ position relative
                     , transforms
@@ -482,38 +492,48 @@ view model =
                     , Svg.path [Svg.Attributes.id "CW", Svg.Attributes.name "Curaco", Svg.Attributes.d "m 595.9,494.9 0,-0.6 -0.9,-0.4 0,0.3 0.1,0.2 0.3,0.1 0.1,0.2 -0.1,0.6 0.2,0.3 0.3,-0.7 z"] []
                     , Svg.path [Svg.Attributes.id "IC", Svg.Attributes.name "Canary Islands", Svg.Attributes.d "m 879.6,395.2 -0.2,-0.2 -0.7,0.5 -0.6,0 0.1,0.2 0.1,0.2 0.7,0.4 0.6,-1.1 z m 13.5,-2.1 0,-0.1 -0.1,0 -0.1,0.1 -1.3,-0.1 -0.2,0.6 -0.5,0.4 0,0.7 0.5,0.7 0.3,0.1 0.5,0.1 0.7,-0.4 0.2,-0.4 0.1,-0.8 -0.1,-0.4 0,-0.5 z m -9.7,0.8 0.5,-0.4 0,-0.2 -0.1,-0.3 -0.5,-0.3 -0.2,0 -0.2,0.2 -0.2,0.4 0.3,0.5 0.2,0.1 0.2,0 z m 4.7,-2.3 1.2,-1 0,-0.3 -1,0.1 -1.1,1 -0.3,0.1 -1,0.1 -0.5,0 -0.4,0.2 0.2,0.3 0.4,1 0.7,0.9 0.6,-0.2 0.3,-0.2 0.4,-0.6 0.5,-1.4 z m 11.6,1.3 1.5,-0.5 0.3,-1 0.3,-1.1 0,-0.7 -0.2,-0.3 -0.1,0 -0.4,0 -0.3,0.2 -0.1,0.6 -0.7,1.3 -0.5,1.2 -0.7,0.6 -0.7,0.2 0.1,0.1 0.7,0.1 0.8,-0.7 z m -19.7,-2 0.5,-0.5 0.1,-0.3 -0.1,-0.5 0.2,-0.2 -0.1,-0.4 -0.3,-0.4 -0.7,0 -0.4,0.6 0.6,1.2 0.1,0.5 0.1,0 z m 22.4,-2.7 0.9,-0.3 0.5,-0.3 0.1,-0.9 0.2,-0.3 -0.2,-0.3 -0.2,0.2 -0.2,0.4 -0.6,0.2 -0.8,0.4 -0.2,0.3 -0.2,0.9 0.4,0.1 0.3,-0.4 z"] []
                     ]
-                    , Svg.g
-                        [ styles
-                            [ fontSize (px 72)
-                            , fontFamilies ["Calligraffitti", "cursive"]
-                            , fontWeight bold
-                            , textShadow4 (px 4) (px 4) (px 4) shadow1
-                            ]
-                        ] (List.map svgify children)
-                    , Svg.g
-                        [ styles
-                            [ fontSize (px 48)
-                            , fontFamilies ["Calligraffitti", "cursive"]
-                            , fontWeight bold
-                            , textShadow4 (px 4) (px 4) (px 4) shadow1
-                            ]
+                , Svg.g
+                    [ styles
+                        [ fontSize (px 72)
+                        , fontFamilies ["Calligraffitti", "cursive"]
+                        , fontWeight bold
+                        , textShadow4 (px 4) (px 4) (px 4) shadow1
                         ]
-                        [ Svg.a
-                            [ Svg.Attributes.xlinkHref ("#" ++ "Tilbage")
-                            , Svg.Events.onClick Back
-                            , Svg.Attributes.textAnchor "end"
-                            , Svg.Attributes.dominantBaseline "hanging"
-                            ]
-                            [ Svg.text_
-                                [ Svg.Attributes.x (toString ((-1*((x1/z1)-50))+((50*0.95)/z1)) ++ "%")
-                                , Svg.Attributes.y (toString ((-1*((y1/z1)-50))-((50*0.95)/z1)) ++ "%")
-                                , Svg.Attributes.fill accent
+                    ] (List.map svgify children)
+                ,
+                if hasDaddy then
+                Svg.svg
+                    [ styles
+                        [ textShadow4 (px 4) (px 4) (px 4) shadow1
+                        ]
+                    , Svg.Attributes.x (toString ((-1*((x1/z1)-50))-((50*0.95)/z1)) ++ "%")
+                    , Svg.Attributes.y (toString ((-1*((y1/z1)-50))-((50*0.95)/z1)) ++ "%")
+                    ]
+                    [ Svg.a
+                        [ Svg.Attributes.xlinkHref ("#" ++ "Tilbage")
+                        , Svg.Events.onClick Back
+                        , styles
+                            [ transforms
+                                [ scale (6/z1)
                                 ]
-                                [Svg.text "Tilbage"]
                             ]
                         ]
+                        [ Svg.path
+                            [ Svg.Attributes.fill "white"
+                            , Svg.Attributes.strokeOpacity "0.9"
+                            , Svg.Attributes.strokeWidth "0.8"
+                            , Svg.Attributes.stroke "#382c37"
+                            -- den her skal nok ikke være der.
+                            , Svg.Attributes.d "M10,9V5L3,12L10,19V14.9C15,14.9 18.5,16.5 21,20C20,15 17,10 10,9Z"]
+                            []
+                        ]
+                    ]
+                else
+                    Html.text ""
                 ]
             ]
+
+
 
 
 
@@ -527,7 +547,7 @@ svgify tree =
                 Svg.text_
                     [ Svg.Attributes.x (toString x ++ "%")
                     , Svg.Attributes.y (toString y ++ "%")
-                    , Svg.Attributes.fill accent
+                    , Svg.Attributes.fill "white"
                     , Svg.Attributes.textAnchor "middle"
                     ] [Svg.text name]
             _ ->
@@ -542,7 +562,7 @@ svgify tree =
                     [ Svg.text_
                         [ Svg.Attributes.x (toString x ++ "%")
                         , Svg.Attributes.y (toString y ++ "%")
-                        , Svg.Attributes.fill accent
+                        , Svg.Attributes.fill "white"
                         , Svg.Attributes.textAnchor "middle"
                         ] [Svg.text name]
                     ]
