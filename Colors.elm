@@ -1,4 +1,4 @@
-module Colors exposing (Colors(..), color)
+module Colors exposing (Colors(..), toColor)
 
 import Css exposing (Color, rgba)
 
@@ -9,8 +9,8 @@ type Colors
     | Shadow1
     | Shadow2
 
-color : Colors -> Color
-color x =
+toColor : Colors -> Color
+toColor x =
     case x of
         Primary -> primary
         Secondary -> secondary

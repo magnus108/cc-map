@@ -5,17 +5,29 @@ module MultiwayTree exposing
     , children
     )
 
+--coould be type Tree a b
 type Tree a
-    = Tree a (Forest a)
+    = Branch a (Forest a)
+    | Leaf a
 
 
 type alias Forest a =
     List (Tree a)
 
 datum : Tree a -> a
-datum (Tree datum children) =
-    datum
+datum tree =
+    case tree of
+        Branch datum branches
+            -> datum
+
+        Leaf datum
+            -> datum
 
 children : Tree a -> Forest a
-children (Tree datum children) =
-    children
+children tree =
+    case tree of
+        Branch datum branches
+            -> branches
+
+        Leaf datum
+            -> []

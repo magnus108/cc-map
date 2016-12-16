@@ -2,6 +2,7 @@ module Destination exposing (Destination)
 
 import Colors exposing (Colors(..))
 
+
 type alias Destination =
     { x : Float
     , y : Float
@@ -9,4 +10,3 @@ type alias Destination =
     , name : String
     , textShadow : Colors
     }
-
