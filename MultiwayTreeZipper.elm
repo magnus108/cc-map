@@ -33,31 +33,27 @@ goUp : Zipper a -> Maybe (Zipper a)
 goUp ( tree, breadcrumbs ) =
     case breadcrumbs of
         (Context datum before after) :: bs ->
-            Just ( Branch datum (before ++ [ tree ] ++ after), bs )
+            Just ( Tree datum (before ++ [ tree ] ++ after), bs )
 
         [] ->
             Nothing
 
 
 goToChild : a -> Zipper a -> Maybe (Zipper a)
-goToChild child zipper =
-    case zipper of
-        (Branch datum children, breadcrumbs) ->
-            let
-                maybeSplit =
-                    datumIndex child children
-                        &> (flip splitOnIndex children)
+goToChild child (Tree datum children, breadcrumbs) =
+    let
+        maybeSplit =
+            datumIndex child children
+                &> (flip splitOnIndex children)
 
-            in
-                case (maybeSplit) of
-                    Nothing ->
-                        Nothing
+    in
+        case (maybeSplit) of
+            Nothing ->
+                Nothing
 
-                    Just ( before, focus, after ) ->
-                        Just ( focus, (Context datum before after) :: breadcrumbs )
+            Just ( before, focus, after ) ->
+                Just ( focus, (Context datum before after) :: breadcrumbs )
 
-        (Leaf datum, breadcrumbs) ->
-            Nothing
 
 --maybe move list functions out of here
 findIndex : (a -> Bool) -> List a -> Maybe Int

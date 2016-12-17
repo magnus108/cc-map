@@ -26,34 +26,32 @@ import Colors exposing (Colors(..), toColor)
 import MultiwayTreeZipper exposing (children)
 import List as L
 
---isted for child skriv destination
-destinationView : Tree Destination -> Svg Msg
-destinationView child =
-    case child of
-        (Branch destination branches) ->
-            a
-                [ xlinkHref ("#" ++ destination.name)
-                , onClick (Click destination)
-                ]
-                [ text_
-                    [ x (toString destination.x ++ "%")
-                    , y (toString destination.y ++ "%")
-                    , fill "white"
-                    , textAnchor "middle"
-                    ]
-                    [ text destination.name
-                    ]
-                ]
 
-        (Leaf destination) ->
-            text_
-                [ x (toString destination.x ++ "%")
-                , y (toString destination.y ++ "%")
+destinationView : Tree Destination -> Svg Msg
+destinationView (Tree datum children) =
+    if L.isEmpty children then
+        text_
+            [ x (toString datum.x ++ "%")
+            , y (toString datum.y ++ "%")
+            , fill "white"
+            , textAnchor "middle"
+            ]
+            [ text datum.name
+            ]
+    else
+        a
+            [ xlinkHref ("#" ++ datum.name)
+            , onClick (Click datum)
+            ]
+            [ text_
+                [ x (toString datum.x ++ "%")
+                , y (toString datum.y ++ "%")
                 , fill "white"
                 , textAnchor "middle"
                 ]
-                [ text destination.name
+                [ text datum.name
                 ]
+            ]
 
 
 destinationViewStyle : Attribute msg

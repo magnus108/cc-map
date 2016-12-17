@@ -5,29 +5,18 @@ module MultiwayTree exposing
     , children
     )
 
---coould be type Tree a b
 type Tree a
-    = Branch a (Forest a)
-    | Leaf a
-
+    = Tree a (Forest a)
 
 type alias Forest a =
     List (Tree a)
 
-datum : Tree a -> a
-datum tree =
-    case tree of
-        Branch datum branches
-            -> datum
 
-        Leaf datum
-            -> datum
+-- MÅSKE bør man slet ikke have disse functioner???
+datum : Tree a -> a
+datum (Tree datum children) =
+    datum
 
 children : Tree a -> Forest a
-children tree =
-    case tree of
-        Branch datum branches
-            -> branches
-
-        Leaf datum
-            -> []
+children (Tree datum children) =
+    children
