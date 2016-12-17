@@ -27,26 +27,24 @@ update msg model =
             let
 
                 updateDomain model =
-                    let
-                        {zipper} = model
-                    in
-                        { model
-                        -- okay so maybe this should have an error.
-                        | zipper = Maybe.withDefault zipper (goUp zipper)
-                        }
+                    { model
+                    | zipper = Maybe.withDefault model.zipper (goUp model.zipper)
+                    }
 
-                {-
                 updatePosition model =
                     let
                         {t, zipper} = model
 
-                        tree =
-                            case zipper of
-                                Nothing -> verden
-                                Just (a, b) ->
-                                    a
+--Har lavet en amsse gøgl her..
+--Har lavet en amsse gøgl her..
+--Har lavet en amsse gøgl her..
+--Har lavet en amsse gøgl her..
+--Har lavet en amsse gøgl her..gtg
+--Har lavet en amsse gøgl her..
+--Har lavet en amsse gøgl her..
+--Har lavet en amsse gøgl her..
 
-                        (MultiwayTree.Tree {x, y, z} b) = tree
+                        {x, y, z} = MultiwayTreeZipper.datum model.zipper
 
                         x2 = z*(50-x)
                         y2 = z*(50-y)
@@ -57,12 +55,12 @@ update msg model =
                         , z2 = z
                         , t1 = t
                         }
-                        -}
 
                 model_ =
                     model
                         |> updateDomain
-                  --      |> updatePosition
+                        |> updatePosition
+                        |> startTimer
 
             in
                 model_ ! []

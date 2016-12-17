@@ -5,6 +5,7 @@ module MultiwayTreeZipper exposing
     , goUp
     , goToChild
     , isRoot
+    , datum
     , children
     )
 
