@@ -1,20 +1,19 @@
 module MultiwayTreeZipper exposing
-    ( Context (..)
+    ( Context (Context)
     , Breadcrumbs
     , Zipper
     , goUp
     , goToChild
     , isRoot
-    , datum
     , children
+    , datum
     )
 
-
-import MultiwayTree exposing (Tree(..), Forest)
+import MultiwayTree
 
 
 type Context a
-    = Context a (List (Tree a)) (List (Tree a))
+    = Context a (List (MultiwayTree.Tree a)) (List (MultiwayTree.Tree a))
 
 
 type alias Breadcrumbs a =
@@ -22,7 +21,9 @@ type alias Breadcrumbs a =
 
 
 type alias Zipper a =
-    (Tree a, Breadcrumbs a)
+    { tree : MultiwayTree.Tree a
+    , breadcrumbs : Breadcrumbs a
+    }
 
 
 (&>) : Maybe a -> (a -> Maybe b) -> Maybe b
@@ -30,18 +31,24 @@ type alias Zipper a =
 
 
 goUp : Zipper a -> Maybe (Zipper a)
-goUp ( tree, breadcrumbs ) =
-    case breadcrumbs of
+goUp zipper =
+    case zipper.breadcrumbs of
         (Context datum before after) :: bs ->
-            Just ( Tree datum (before ++ [ tree ] ++ after), bs )
+            Just
+                { zipper
+                | tree = MultiwayTree.Tree datum (before ++ [ zipper.tree ] ++ after)
+                , breadcrumbs = bs
+                }
 
         [] ->
             Nothing
 
 
 goToChild : a -> Zipper a -> Maybe (Zipper a)
-goToChild child (Tree datum children, breadcrumbs) =
+goToChild child zipper =
     let
+        (MultiwayTree.Tree datum children) = zipper.tree
+
         maybeSplit =
             datumIndex child children
                 &> (flip splitOnIndex children)
@@ -52,10 +59,13 @@ goToChild child (Tree datum children, breadcrumbs) =
                 Nothing
 
             Just ( before, focus, after ) ->
-                Just ( focus, (Context datum before after) :: breadcrumbs )
+                Just
+                    { zipper
+                    | tree = focus
+                    , breadcrumbs = (Context datum before after) :: zipper.breadcrumbs
+                    }
 
 
---maybe move list functions out of here
 findIndex : (a -> Bool) -> List a -> Maybe Int
 findIndex p = List.head << findIndices p
 
@@ -64,16 +74,16 @@ findIndices : (a -> Bool) -> List a -> List Int
 findIndices p = List.map Tuple.first << List.filter (\(i,x) -> p x) << List.indexedMap (,)
 
 
-datumIndex : a -> List (Tree a) -> Maybe Int
+datumIndex : a -> List (MultiwayTree.Tree a) -> Maybe Int
 datumIndex x = findIndex (compareWithDatum x)
 
 
-compareWithDatum : a -> Tree a -> Bool
-compareWithDatum elem tree =
-    MultiwayTree.datum tree == elem
+compareWithDatum : a -> MultiwayTree.Tree a -> Bool
+compareWithDatum elem (MultiwayTree.Tree datum children) =
+    datum == elem
 
 
-splitOnIndex : Int -> List (Tree a) -> Maybe ( List (Tree a), Tree a, List (Tree a) )
+splitOnIndex : Int -> List (MultiwayTree.Tree a) -> Maybe ( List (MultiwayTree.Tree a), MultiwayTree.Tree a, List (MultiwayTree.Tree a) )
 splitOnIndex n xs =
     let
         before =
@@ -93,20 +103,15 @@ splitOnIndex n xs =
                 Just ( before, f, after )
 
 
-datum : Zipper a -> a
-datum ( tree, breadcrumbs ) =
-    MultiwayTree.datum tree
-
-
-children : Zipper a -> Forest a
-children ( tree, breadcrumbs ) =
-    MultiwayTree.children tree
-
-
 isRoot : Zipper a -> Bool
-isRoot ( tree, breadcrumbs ) =
-    case breadcrumbs of
-        [] ->
-            True
-        otherwise ->
-            False
+isRoot zipper =
+    List.isEmpty zipper.breadcrumbs
+
+
+children : Zipper a -> MultiwayTree.Forest a
+children zipper =
+    MultiwayTree.children zipper.tree
+
+datum : Zipper a -> a
+datum zipper =
+    MultiwayTree.datum zipper.tree

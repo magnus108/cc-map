@@ -1,112 +1,62 @@
 module Update exposing (update)
 
-import Model exposing (Model)
-import Msg exposing (Msg(..))
+import Model
+import Msg
 
-import Tween exposing (linearTween)
-import MultiwayTreeZipper exposing (Zipper, goUp, goToChild)
+import Destination
+import Tween
+import MultiwayTree
+import MultiwayTreeZipper
 
 
-
-
-startTimer : Model -> Model
+startTimer : Model.Model -> Model.Model
 startTimer model =
+    { model | t1 = model.t }
+
+
+updateDomain : (MultiwayTreeZipper.Zipper Destination.Destination -> Maybe (MultiwayTreeZipper.Zipper Destination.Destination)) -> Model.Model -> Model.Model
+updateDomain fn model =
     { model
-    | t1 = model.t
+    | zipper = Maybe.withDefault model.zipper (fn model.zipper)
     }
 
 
+updatePosition : Model.Model -> Model.Model
+updatePosition model =
+    let
+        {x, y, z} = MultiwayTree.datum model.zipper.tree
+    in
+        { model
+        | x2 = z*(50-x)
+        , y2 = z*(50-y)
+        , z2 = z
+        }
 
-update : Msg -> Model -> (Model, Cmd Msg)
+
+update : Msg.Msg -> Model.Model -> (Model.Model, Cmd Msg.Msg)
 update msg model =
+
     case msg of
-        NoOp ->
+
+        Msg.NoOp ->
             model ! []
 
-        Back ->
-            let
+        Msg.Back ->
+            (model
+                |> updateDomain MultiwayTreeZipper.goUp
+                |> updatePosition
+                |> startTimer
+                , Cmd.none)
 
-                updateDomain model =
-                    { model
-                    | zipper = Maybe.withDefault model.zipper (goUp model.zipper)
-                    }
+        Msg.Click destination ->
 
-                updatePosition model =
-                    let
-                        {t, zipper} = model
+            (model
+                |> updateDomain (MultiwayTreeZipper.goToChild destination)
+                |> updatePosition
+                |> startTimer
+                , Cmd.none)
 
---Har lavet en amsse gøgl her..
---Har lavet en amsse gøgl her..
---Har lavet en amsse gøgl her..
---Har lavet en amsse gøgl her..
---Har lavet en amsse gøgl her..gtg
---Har lavet en amsse gøgl her..
---Har lavet en amsse gøgl her..
---Har lavet en amsse gøgl her..
-
-                        {x, y, z} = MultiwayTreeZipper.datum model.zipper
-
-                        x2 = z*(50-x)
-                        y2 = z*(50-y)
-                    in
-                        { model
-                        | x2 = x2
-                        , y2 = y2
-                        , z2 = z
-                        , t1 = t
-                        }
-
-                model_ =
-                    model
-                        |> updateDomain
-                        |> updatePosition
-                        |> startTimer
-
-            in
-                model_ ! []
-
-    --    Hover tree ->
-      --      model ! []
-
-        Click destination ->
-
-            let
-
-                {x, y, z} = destination
-
-                -- måske -1 skal være - model.z2????
-
-                -- THIS CAN BE MADE MUCH PRETTIER
-                -- THIS CAN BE MADE MUCH PRETTIER
-                -- THIS CAN BE MADE MUCH PRETTIER
-                -- måske benyt som input ved model_
-                x2 = z*(50-x)
-                y2 = z*(50-y)
-
-                updateDomain model =
-                    { model
-                    | zipper = Maybe.withDefault model.zipper (goToChild destination model.zipper)
-                    }
-
-
-                updatePosition model =
-                    { model
-                    | x2 = x2
-                    , y2 = y2
-                    , z2 = z
-                    }
-
-
-                model_ =
-                    model
-                        |> updateDomain
-                        |> updatePosition
-                        |> startTimer
-
-            in
-                model_ ! []
-
-        Animate _ ->
+        Msg.Animate _ ->
             let
                 updatePosition model =
                     let
@@ -129,9 +79,9 @@ update msg model =
 
                         dz = z2-z1
 
-                        cx = linearTween dt x1 dx t2
-                        cy = linearTween dt y1 dy t2
-                        cz = linearTween dt z1 dz t2
+                        cx = Tween.linearTween dt x1 dx t2
+                        cy = Tween.linearTween dt y1 dy t2
+                        cz = Tween.linearTween dt z1 dz t2
                     in
                         { model
                         | x1 = cx

@@ -1,9 +1,9 @@
 module Subscriptions exposing (subscriptions)
 
-import Model exposing (Model)
-import Msg exposing (Msg(..))
-import AnimationFrame exposing (diffs)
+import Model
+import Msg
+import AnimationFrame
 
-subscriptions : Model -> Sub Msg
+subscriptions : Model.Model -> Sub Msg.Msg
 subscriptions model =
-    diffs Animate
+    AnimationFrame.diffs Msg.Animate

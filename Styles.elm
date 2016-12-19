@@ -1,9 +1,9 @@
 module Styles exposing (styles)
 
-import Css exposing (Mixin, asPairs)
-import Html exposing (Attribute)
-import Html.Attributes exposing (style)
+import Css
+import Html
+import Html.Attributes
 
-styles : List Mixin -> Attribute msg
+styles : List Css.Mixin -> Html.Attribute msg
 styles =
-    asPairs >> style
+    Css.asPairs >> Html.Attributes.style

@@ -1,11 +1,11 @@
-module Msg exposing (Msg(..))
+module Msg exposing (Msg(NoOp, Click, Animate, Back))
 
-import Destination exposing (Destination)
-import Time exposing (Time)
+import Time
+
+import Destination
 
 type Msg
     = NoOp
-    | Click Destination
-    | Animate Time
+    | Click Destination.Destination
+    | Animate Time.Time
     | Back
-   -- | Hover (Tree Node)
