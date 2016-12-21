@@ -1,6 +1,9 @@
 module View exposing (view)
 
 import Html
+--bad
+import Html.Attributes
+
 import Css
 import Svg
 import Svg.Attributes
@@ -14,53 +17,88 @@ import MultiwayTreeZipper
 import MultiwayTree
 import Destination
 
+import Colors exposing (palette)
 
 view : Model.Model -> Html.Html Msg.Msg
 view model =
     Html.div
         [ Styles.styles
-            [ Css.width (Css.pct 100)
-            , Css.overflow Css.hidden
+            [ Css.displayFlex
+            , Css.flexFlow2 Css.wrap Css.column
+            , Css.height (Css.pct 100)
             ]
         ]
-        [ Svg.svg
-            [ Svg.Attributes.version "1.1"
-            , Svg.Attributes.viewBox "0 0 2000 1001"
-            , Styles.styles
-                [ Css.marginLeft Css.auto
-                , Css.marginRight Css.auto
-                , Css.display Css.block
-                , Css.height (Css.px 500)
-                , Css.width (Css.px 1000)
-                , Css.position Css.relative
-                , Css.transforms
-                    [ Css.translate2 (Css.pct model.x1) (Css.pct model.y1)
-                    , Css.scale model.z1
-                    ]
+        [ Html.div
+            [ Styles.styles
+                [ Css.displayFlex
+                , Css.flexFlow2 Css.wrap Css.row
+                , Css.flex (Css.int 1)
                 ]
             ]
-            [ map model
-            , controlPanel model
+            [ --bad
+            Html.node "link" [Html.Attributes.href "https://fonts.googleapis.com/css?family=Nothing+You+Could+Do", Html.Attributes.rel "stylesheet"] []
+            , sideBar model
+            , -- this svg should maybe be the map !
+              Html.div
+                    [ Styles.styles
+                        [ Css.overflow Css.hidden
+                        , Css.backgroundColor (Css.hex palette.primaryDark)
+                        , Css.flex2 (Css.int 4) (Css.int 1)
+                        , Css.minWidth (Css.px 580)
+                        , Css.minHeight (Css.pct 100)
+                        ]
+                    ]
+                    [ Svg.svg
+                        [ Svg.Attributes.version "1.1"
+                        , Svg.Attributes.viewBox "0 0 2000 1001"
+                        , Styles.styles
+                            [ Css.transforms
+                                [ Css.translate2 (Css.pct model.x1) (Css.pct model.y1)
+                                , Css.scale model.z1
+                                ]
+                            ]
+                        ]
+                        [ map model
+                        , controlPanel model
+                        ]
+                    ]
             ]
         ]
 
+--controlPanel
+sideBar : Model.Model -> Html.Html Msg.Msg
+sideBar model =
+    Html.div
+        [ Styles.styles
+            [ Css.backgroundColor (Css.hex palette.accent)
+            , Css.flex2 (Css.int 1) (Css.int 1)
+            , Css.minWidth (Css.px 360)
+            , Css.overflow Css.auto
+            , Css.padding (Css.px 20)
+            , Css.color (Css.hex palette.text)
+            , Css.position Css.relative
+            , Css.boxShadow5 (Css.px 3) (Css.px 2) (Css.px 2) (Css.px 0) (Css.rgba 0 0 0 0.2)
+            ]
+        ]
+        ---Maybe use fold instead of this shit
+       -- [ Html.text <| toString (List.map (\(x,y) -> (x.name, List.map .name y))  (MultiwayTree.tuplesOfDatumAndFlatChildren model.zipper.tree ))]
+        [ Html.ul []
+            [ Html.li [] [Html.text "bob"]
+            , Html.li [] [Html.text "africa"]
+            ]
+        ]
 
 map : Model.Model -> Svg.Svg Msg.Msg
 map model =
     Svg.g []
-        [ markers model
-        , countries
+        [ countries
+        , markers model
         ]
 
 
 markers : Model.Model -> Svg.Svg Msg.Msg
 markers model =
-    Svg.g
-        [ Styles.styles
-            [ Css.fontSize (Css.px 42)
-            , Css.fontWeight Css.bold
-            ]
-        ] ( List.map marker (MultiwayTreeZipper.children model.zipper) )
+    Svg.g [] ( List.map marker (MultiwayTreeZipper.children model.zipper) )
 
 
 marker : MultiwayTree.Tree Destination.Destination -> Svg.Svg Msg.Msg
@@ -77,6 +115,13 @@ leaf destination =
         [ Svg.Attributes.x (toString destination.x ++ "%")
         , Svg.Attributes.y (toString destination.y ++ "%")
         , Svg.Attributes.textAnchor "middle"
+        , Svg.Attributes.fill palette.accent
+        , Svg.Attributes.stroke palette.primaryDark
+        , Styles.styles
+            [ Css.fontSize (Css.px 42)
+            , Css.fontWeight Css.bold
+            , Css.fontFamilies ["Nothing You Could Do", "cursive"]
+            ]
         ]
         [ Svg.text destination.name
         ]
@@ -92,9 +137,12 @@ branch destination =
             [ Svg.Attributes.x (toString destination.x ++ "%")
             , Svg.Attributes.y (toString destination.y ++ "%")
             , Svg.Attributes.textAnchor "middle"
+            , Svg.Attributes.fill palette.accent
+            , Svg.Attributes.stroke palette.primaryDark
             , Styles.styles
                 [ Css.fontSize (Css.px 72)
                 , Css.fontWeight Css.bold
+                , Css.fontFamilies ["Nothing You Could Do", "cursive"]
                 ]
             ]
             [ Svg.text destination.name
@@ -108,7 +156,7 @@ controlPanel model =
         [ backButton model ]
 
 
-
+--SHOULD MAKE CIRCLE BEHIND THIS AS IN MATERIAL DESIGN.
 backButton : Model.Model -> Svg.Svg Msg.Msg
 backButton model =
     if (MultiwayTreeZipper.isRoot model.zipper) then
@@ -121,6 +169,8 @@ backButton model =
             [ Svg.a
                 [ Svg.Attributes.xlinkHref ("#" ++ "Tilbage") --should go to some other path
                 , Svg.Events.onClick Msg.Back
+                , Svg.Attributes.stroke palette.primaryDark
+                , Svg.Attributes.fill palette.accent
                 , Styles.styles
                     [ Css.transforms
                         [ Css.scale ((1/model.z1)*8)
@@ -133,16 +183,16 @@ backButton model =
 backArrow : Svg.Svg Msg.Msg
 backArrow =
     Svg.path
-        [ Svg.Attributes.strokeOpacity "0.9"
-        , Svg.Attributes.strokeWidth "0.8"
-        , Svg.Attributes.stroke "#382c37"
-        , Svg.Attributes.d "M10,9V5L3,12L10,19V14.9C15,14.9 18.5,16.5 21,20C20,15 17,10 10,9Z"
+        [  Svg.Attributes.d "M10,9V5L3,12L10,19V14.9C15,14.9 18.5,16.5 21,20C20,15 17,10 10,9Z"
         ] []
 
 
 countries : Svg.Svg Msg.Msg
 countries =
-    Svg.g []
+    Svg.g
+        [ Svg.Attributes.fill palette.primaryLight
+        , Svg.Attributes.stroke palette.primaryLight
+        ]
         [ Svg.path [Svg.Attributes.id "AF", Svg.Attributes.name "Afghanistan", Svg.Attributes.d "m 1369.9,333.8 -5.4,0 -3.8,-0.5 -2.5,2.9 -2.1,0.7 -1.5,1.3 -2.6,-2.1 -1,-5.4 -1.6,-0.3 0,-2 -3.2,-1.5 -1.7,2.3 0.2,2.6 -0.6,0.9 -3.2,-0.1 -0.9,3 -2.1,-1.3 -3.3,2.1 -1.8,-0.8 -4.3,-1.4 -2.9,0 -1.6,-0.2 -2.9,-1.7 -0.3,2.3 -4.1,1.2 0.1,5.2 -2.5,2 -4,0.9 -0.4,3 -3.9,0.8 -5.9,-2.4 -0.5,8 -0.5,4.7 2.5,0.9 -1.6,3.5 2.7,5.1 1.1,4 4.3,1.1 1.1,4 -3.9,5.8 9.6,3.2 5.3,-0.9 3.3,0.8 0.9,-1.4 3.8,0.5 6.6,-2.6 -0.8,-5.4 2.3,-3.6 4,0 0.2,-1.7 4,-0.9 2.1,0.6 1.7,-1.8 -1.1,-3.8 1.5,-3.8 3,-1.6 -3,-4.2 5.1,0.2 0.9,-2.3 -0.8,-2.5 2,-2.7 -1.4,-3.2 -1.9,-2.8 2.4,-2.8 5.3,-1.3 5.8,-0.8 2.4,-1.2 2.8,-0.7 -1.4,-1.9 z"] []
         , Svg.path [Svg.Attributes.id "AO", Svg.Attributes.name "Angola", Svg.Attributes.d "m 1068.3,609.6 -16.6,-0.1 -1.9,0.7 -1.7,-0.1 -2.3,0.9 -0.5,1.2 2.8,4 1.1,4.3 1.6,6.1 -1.7,2.6 -0.3,1.3 1.3,3.8 1.5,3.9 1.6,2.2 0.3,3.6 -0.7,4.8 -1.8,2.8 -3.3,4.2 -1.3,2.6 -1.9,5.7 -0.3,2.7 -2,5.9 -0.9,5.5 0.5,4 2.7,-1.2 3.3,-1 3.6,0.1 3.2,2.9 0.9,-0.4 22.5,-0.3 3.7,3 13.4,0.9 10.3,-2.5 -3.5,-4 -3.6,-5.2 0.8,-20.3 11.6,0.1 -0.5,-2.2 0.9,-2.4 -0.9,-3 0.7,-3 -0.5,-2 -2.6,-0.4 -3.5,1 -2.4,-0.2 -1.4,0.6 0.5,-7.6 -1.9,-2.3 -0.3,-4 0.9,-3.8 -1.2,-2.4 0,-4 -6.8,0 0.5,-2.3 -2.9,0 -0.3,1.1 -3.4,0.3 -1.5,3.7 -0.9,1.6 -3,-0.9 -1.9,0.9 -3.7,0.5 -2.1,-3.3 -1.3,-2.1 -1.6,-3.8 -1.3,-4.7 z m -21.8,-1.3 0.2,-2.7 0.9,-1.7 2,-1.3 -2,-2.2 -1.8,1.1 -2.2,2.7 1.4,4.8 1.5,-0.7 z"] []
         , Svg.path [Svg.Attributes.id "AL", Svg.Attributes.name "Albania", Svg.Attributes.d "m 1077.5,300.5 -2,3.1 0.5,1.9 0,0 1,1 -0.5,1.9 -0.1,4.3 0.7,3 3,2.1 0.2,1.4 1,0.4 2.1,-3 0.1,-2.1 1.6,-0.9 0,-1.6 -2.3,-1.6 -0.9,-2.6 0.4,-2.1 0,0 -0.5,-2.3 -1.3,-0.6 -1.3,-1.6 -1.3,0.5 -0.4,-1.2 z"] []
