@@ -54,7 +54,9 @@ verden =
             ]
         , MultiwayTree.Tree { x = 25, y = 35, z = 2, name = "Nordamerika"}
             [ MultiwayTree.Tree { x = 25, y = 27, z = 3, name = "Canda"} []
-            , MultiwayTree.Tree { x = 21, y = 35, z = 5, name = "USA"} []
+            , MultiwayTree.Tree { x = 21, y = 35, z = 5, name = "USA"}
+                [ MultiwayTree.Tree { x = 21, y = 35, z = 5, name = "New York"} []
+                ]
             , MultiwayTree.Tree { x = 27, y = 45, z = 3, name = "Cuba"} []
             , MultiwayTree.Tree { x = 30, y = 50, z = 3, name = "Dansk Vestindien"} []
             , MultiwayTree.Tree { x = 20, y = 43, z = 3, name = "Mexico"} []

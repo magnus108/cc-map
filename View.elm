@@ -43,7 +43,7 @@ view model =
                     [ Styles.styles
                         [ Css.overflow Css.hidden
                         , Css.backgroundColor (Css.hex palette.primaryDark)
-                        , Css.flex2 (Css.int 4) (Css.int 1)
+                        , Css.flex3 (Css.int 4) (Css.int 1) (Css.px 580)
                         , Css.minWidth (Css.px 580)
                         , Css.minHeight (Css.pct 100)
                         ]
@@ -71,22 +71,71 @@ sideBar model =
     Html.div
         [ Styles.styles
             [ Css.backgroundColor (Css.hex palette.accent)
-            , Css.flex2 (Css.int 1) (Css.int 1)
-            , Css.minWidth (Css.px 360)
+            , Css.flex3 (Css.int 1) (Css.int 1) (Css.px 320)
             , Css.overflow Css.auto
-            , Css.padding (Css.px 20)
             , Css.color (Css.hex palette.text)
             , Css.position Css.relative
             , Css.boxShadow5 (Css.px 3) (Css.px 2) (Css.px 2) (Css.px 0) (Css.rgba 0 0 0 0.2)
             ]
         ]
-        ---Maybe use fold instead of this shit
-       -- [ Html.text <| toString (List.map (\(x,y) -> (x.name, List.map .name y))  (MultiwayTree.tuplesOfDatumAndFlatChildren model.zipper.tree ))]
-        [ Html.ul []
-            [ Html.li [] [Html.text "bob"]
-            , Html.li [] [Html.text "africa"]
+        --1-Maybe use fold instead of this shit
+       --1 [ Html.text <| toString (List.map (\(x,y) -> (x.name, List.map .name y))  (MultiwayTree.tuplesOfDatumAndFlatChildren model.zipper.tree ))]
+        [ Html.div
+            [ Styles.styles
+                [ Css.margin (Css.px 20)
+                ]
+            ]
+            [ unorderedListFromTree model.zipper.tree
             ]
         ]
+
+
+
+-- denne liste bliver meget indenteret... det er skidt
+
+--- denne liste kan have vildt mange børn ... det er skidt
+
+
+--overvej kun at vise børn i et nivau -- let kode - overvej at vise som im elm material deesign
+--- Make sidebar open close....
+--- Make sidebar open close....
+--- Make sidebar open close....
+--- Make sidebar open close....
+--- Make sidebar open close....
+--- Make sidebar open close....
+--- Make sidebar open close....
+--- Make sidebar open close....
+--- Make sidebar open close....
+--- Make sidebar open close....
+
+unorderedListFromTree : MultiwayTree.Tree Destination.Destination -> Html.Html Msg.Msg
+unorderedListFromTree (MultiwayTree.Tree datum children) =
+    case children of
+        [] ->
+            Html.ul []
+                [ Html.li [] [Html.text datum.name] ]
+        _ ->
+            Html.ul []
+                [ Html.li []
+                    ((Html.text datum.name)
+                        :: (List.map unorderedListFromTree children))
+                ]
+
+
+
+
+
+{-
+    [ ( datum, List.concatMap flatten children ) ] 
+        ++ (List.concatMap tuplesOfDatumAndFlatChildren children)
+        -}
+
+
+
+-- (MultiwayTree.tuplesOfDatumAndFlatChildren model.zipper.tree ))]
+
+
+
 
 map : Model.Model -> Svg.Svg Msg.Msg
 map model =
@@ -157,6 +206,7 @@ controlPanel model =
 
 
 --SHOULD MAKE CIRCLE BEHIND THIS AS IN MATERIAL DESIGN.
+-- onhover is also often used.
 backButton : Model.Model -> Svg.Svg Msg.Msg
 backButton model =
     if (MultiwayTreeZipper.isRoot model.zipper) then
